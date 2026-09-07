@@ -1,0 +1,131 @@
+# rules/default_rules.yaml
+# --------------------------
+# 示例规则文件：演示所有内置规则类型的用法。
+# 请根据实际数据集的列名和业务需求修改本文件。
+#
+# 规则字段说明：
+#   id          : 规则唯一标识（字符串）
+#   name        : 规则显示名称
+#   type        : 规则类型（见下方支持列表）
+#   field       : 要检查的列名（支持点号路径，如 meta.author）
+#   severity    : error（计入失败）| warning（仅提示）
+#   message_pass: 通过时的说明（可选）
+#   message_fail: 失败时的说明（可选）
+#
+# 支持的规则类型：
+#   not_empty    - 字段非空
+#   regex        - 正则表达式匹配（需提供 pattern）
+#   length       - 字段长度范围（需提供 min / max）
+#   contains     - 包含关键词（需提供 keyword）
+#   not_contains - 不包含关键词（需提供 keyword）
+#   custom       - 自定义函数（需提供 func_module，对应 rules/<func_module>.py）
+
+rules:
+
+  # ── 非空检查 ──────────────────────────────────────────────────────
+  - id       : R001
+    name     : 标题非空
+    type     : not_empty
+    field    : title
+    severity : error
+    message_fail: "标题字段为空，必须填写"
+
+  - id       : R002
+    name     : 内容非空
+    type     : not_empty
+    field    : content
+    severity : error
+    message_fail: "内容字段为空，必须填写"
+
+  # ── 长度检查 ──────────────────────────────────────────────────────
+  - id       : R003
+    name     : 标题长度合规
+    type     : length
+    field    : title
+    min      : 2
+    max      : 100
+    severity : error
+    message_fail: "标题长度不在 2~100 字符范围内"
+
+  - id       : R004
+    name     : 内容长度合规
+    type     : length
+    field    : content
+    min      : 10
+    max      : 5000
+    severity : warning
+    message_fail: "内容长度不在 10~5000 字符范围内（警告）"
+
+  # ── 正则检查 ──────────────────────────────────────────────────────
+  - id       : R005
+    name     : 邮箱格式正确
+    type     : regex
+    field    : email
+    pattern  : "^[\\w.+-]+@[\\w-]+\\.[\\w.-]+$"
+    severity : error
+    message_fail: "邮箱格式不正确"
+
+  - id       : R006
+    name     : 日期格式正确
+    type     : regex
+    field    : date
+    pattern  : "^\\d{4}-\\d{2}-\\d{2}$"
+    severity : warning
+    message_fail: "日期格式应为 YYYY-MM-DD"
+
+  # ── 关键词检查 ────────────────────────────────────────────────────
+  - id       : R007
+    name     : 内容不含违禁词
+    type     : not_contains
+    field    : content
+    keyword  : "违禁词示例"
+    severity : error
+    message_fail: "内容包含违禁词，请修改"
+
+  - id       : R008
+    name     : 分类字段包含有效标签
+    type     : contains
+    field    : category
+    keyword  : "|"
+    severity : warning
+    message_fail: "分类字段建议使用 '|' 分隔多个标签"
+
+  # ── 自定义函数检查 ────────────────────────────────────────────────
+  # 对应 rules/custom_score_check.py 中的 evaluate() 函数
+  - id         : R009
+    name       : 评分范围合规
+    type       : custom
+    field      : score
+    func_module: custom_score_check
+    severity   : error
+    min_score  : 0
+    max_score  : 100
+    message_fail: "评分不在 0~100 范围内"
+
+  # ── LLM 通知摘要质量评测 ──────────────────────────────────────────
+  # 对应 rules/llm_summary_eval.py 中的 evaluate() 函数
+  # 评测标准来源：rules/llm_scoring_prompt.md（通知摘要效果评测 v1.2）
+  #
+  # 必填环境变量：OPENAI_API_KEY（或通过 api_key_env 指定其他变量名）
+  # 可选字段：
+  #   title_field   - 原文标题列名（默认: title）
+  #   content_field - 原文内容列名（默认: content）
+  #   summary_field - 摘要列名（默认: summary）
+  #   min_score     - 最低合格分 1-5（默认: 3，低于此分记为 error）
+  #   model         - 使用的模型（默认: gpt-4o）
+  #   api_base      - 自定义 API 地址（用于代理或本地模型，可选）
+  #   api_key_env   - API Key 环境变量名（默认: OPENAI_API_KEY）
+  #   prompt_file   - prompt 文件路径（默认: rules/llm_scoring_prompt.md）
+  - id           : R010
+    name         : 通知摘要质量评测（LLM）
+    type         : custom
+    field        : summary
+    func_module  : llm_summary_eval
+    severity     : error
+    title_field  : title
+    content_field: content
+    summary_field: summary
+    min_score    : 3
+    model        : gpt-4o
+    prompt_file  : rules/llm_scoring_prompt.md
+    message_fail : "摘要质量评分低于合格线（3分），请检查摘要内容"
