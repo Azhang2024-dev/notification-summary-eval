@@ -146,7 +146,7 @@ When the score is below 5, select one or more of the following issue types:
 | 重点不突出 | Key Points Missing | 重要事件遗漏或不够突出；验证码类信息未在摘要中给出验证码 | Important events omitted or insufficiently emphasized; verification codes missing from summary |
 | 信息冗余 | Redundant Information | 单事件总结有冗余信息，或本可当作一件事的内容被拆成多个事件 | Individual event summaries contain redundant info, or single events split into multiple descriptions |
 | 低价值信息 | Low-Value Information | 摘要了营销广告、诈骗邮件等垃圾信息，或群组消息中的低价值内容 | Summary includes advertisements, spam, or low-value content from group chats |
-| 其他 | Others | 其他 factors affecting summary quality |
+| 其他 | Others | 其他影响摘要质量的原因 | Other factors affecting summary quality |
 
 ---
 
