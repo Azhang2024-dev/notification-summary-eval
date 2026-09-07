@@ -1,0 +1,9 @@
+title,content,email,date,category,score
+Python入门教程,Python是一种简单易学的编程语言，适合初学者。,user@example.com,2024-01-15,编程|教程,95
+数据分析实战,本文介绍如何使用Pandas进行数据分析。,analyst@data.com,2024-02-20,数据|分析,88
+,这是一条没有标题的记录，应该触发R001规则失败。,noname@test.com,2024-03-01,测试,70
+标题过长示例AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,内容正常。,long@test.com,2024-03-05,测试,60
+正常记录五,内容长度符合要求，邮箱格式正确，日期格式正确。,normal@ok.com,2024-04-10,正常|记录,100
+邮箱格式错误,内容正常，但邮箱格式有问题。,not-an-email,2024-05-01,测试,75
+日期格式错误,内容正常，但日期格式不对。,ok@email.com,20240601,测试,80
+评分超范围,内容正常，但评分超出0-100范围。,ok@email.com,2024-06-15,测试,150
